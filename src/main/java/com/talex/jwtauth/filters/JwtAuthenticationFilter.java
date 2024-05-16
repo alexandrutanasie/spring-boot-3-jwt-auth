@@ -17,6 +17,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import com.talex.jwtauth.services.JwtService;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
 import java.io.IOException;
 
 @Component
@@ -69,6 +71,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
+        } catch (ExpiredJwtException ex) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token is expired");
+            return;
         } catch (Exception exception) {
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
